@@ -73,7 +73,17 @@ class ComponentScanAnnotationParser {
 	}
 
 
+	/**
+	 * 1、创建新的扫描器类scanner = new ClassPathBeanDefinitionScanner(),从元数据注解中读取一系列的配置参数值去设置扫描器的参数
+	 * 2、调用scanner.doScan(StringUtils.toStringArray(basePackages))方法执行扫描处理
+	 * 3、扫描到的BeanDefinition会注册到beanFactory当中的beanDefinitionMaps缓存池当中
+	 *
+	 * @param componentScan 带有@ComponentScan、@ComponentScans注解的元数据
+	 * @param declaringClass 元数据对应的类名称
+	 * @return
+	 */
 	public Set<BeanDefinitionHolder> parse(AnnotationAttributes componentScan, final String declaringClass) {
+		// 创建新的类路径bean定义扫描器
 		ClassPathBeanDefinitionScanner scanner = new ClassPathBeanDefinitionScanner(this.registry,
 				componentScan.getBoolean("useDefaultFilters"), this.environment, this.resourceLoader);
 
@@ -110,10 +120,13 @@ class ComponentScanAnnotationParser {
 		}
 
 		Set<String> basePackages = new LinkedHashSet<>();
+		// 读取到basePackages的值，比如：com.wqp.xxx,可能存在多个用逗号分割开
 		String[] basePackagesArray = componentScan.getStringArray("basePackages");
 		for (String pkg : basePackagesArray) {
+			// 按逗号,分割开basePackages
 			String[] tokenized = StringUtils.tokenizeToStringArray(this.environment.resolvePlaceholders(pkg),
 					ConfigurableApplicationContext.CONFIG_LOCATION_DELIMITERS);
+			// 向basePackages中添加分割开的单个包名称
 			Collections.addAll(basePackages, tokenized);
 		}
 		for (Class<?> clazz : componentScan.getClassArray("basePackageClasses")) {
@@ -129,6 +142,8 @@ class ComponentScanAnnotationParser {
 				return declaringClass.equals(className);
 			}
 		});
+
+		// 扫描器执行扫描
 		return scanner.doScan(StringUtils.toStringArray(basePackages));
 	}
 

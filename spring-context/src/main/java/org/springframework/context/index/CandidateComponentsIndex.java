@@ -28,8 +28,10 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 /**
+ * 提供对META-INF/spring.components下定义的候选组件进行访问
  * Provide access to the candidates that are defined in {@code META-INF/spring.components}.
  *
+ * 能在索引上注册(和查询)任意数量的原型，典型的示例是一个特定的用例标记这个类的注解的完全限定名，以下访问返回对这个包以及子包的所有候选的组件类型
  * <p>An arbitrary number of stereotypes can be registered (and queried) on the index: a
  * typical example is the fully qualified name of an annotation that flags the class for
  * a certain use case. The following call returns all the {@code @Component}
@@ -39,6 +41,7 @@ import org.springframework.util.MultiValueMap;
  *         "com.example", "org.springframework.stereotype.Component");
  * </pre>
  *
+ * type通常是类的完全限定名，虽然这不是一个规则，同样地，这个模板通常是目标类型的完全限定名称，但它实际上可以是任意标记
  * <p>The {@code type} is usually the fully qualified name of a class, though this is
  * not a rule. Similarly, the {@code stereotype} is usually the fully qualified name of
  * a target type but it can be any marker really.

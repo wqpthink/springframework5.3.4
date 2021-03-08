@@ -112,7 +112,7 @@ public @interface ComponentScan {
 	 * <p>Note that setting this attribute overrides any value set for {@link #scopeResolver}.
 	 * @see ClassPathBeanDefinitionScanner#setScopedProxyMode(ScopedProxyMode)
 	 */
-	ScopedProxyMode scopedProxy() default ScopedProxyMode.DEFAULT;
+	ScopedProxyMode scopedProxy() default ScopedProxyMode.DEFAULT; // default 等同于 no
 
 	/**
 	 * Controls the class files eligible for component detection.

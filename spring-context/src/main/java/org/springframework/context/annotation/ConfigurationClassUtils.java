@@ -73,13 +73,15 @@ abstract class ConfigurationClassUtils {
 	}
 
 
+	// 检查给定的BeanDefinition是否是一个用于候选的配置类，并作相应的标记
+	// 或者说嵌套声明的组件类也可以自动注册
 	/**
 	 * Check whether the given bean definition is a candidate for a configuration class
 	 * (or a nested component class declared within a configuration/component class,
 	 * to be auto-registered as well), and mark it accordingly.
 	 * @param beanDef the bean definition to check
 	 * @param metadataReaderFactory the current factory in use by the caller
-	 * @return whether the candidate qualifies as (any kind of) configuration class
+	 * @return whether the candidate qualifies as (any kind of) configuration class  // 候选者是否符合作为配置类
 	 */
 	public static boolean checkConfigurationClassCandidate(
 			BeanDefinition beanDef, MetadataReaderFactory metadataReaderFactory) {
@@ -99,6 +101,7 @@ abstract class ConfigurationClassUtils {
 			// Check already loaded Class if present...
 			// since we possibly can't even load the class file for this Class.
 			Class<?> beanClass = ((AbstractBeanDefinition) beanDef).getBeanClass();
+			// 判断当前beanClass是否是以下4种接口的子类或实现类，如果是则返回false,不属于配置类
 			if (BeanFactoryPostProcessor.class.isAssignableFrom(beanClass) ||
 					BeanPostProcessor.class.isAssignableFrom(beanClass) ||
 					AopInfrastructureBean.class.isAssignableFrom(beanClass) ||
@@ -121,11 +124,15 @@ abstract class ConfigurationClassUtils {
 			}
 		}
 
+		// 获取元数据上@Configuration注解数据
 		Map<String, Object> config = metadata.getAnnotationAttributes(Configuration.class.getName());
+		// @Configuration的proxyBeanMethods参数值默认为true
 		if (config != null && !Boolean.FALSE.equals(config.get("proxyBeanMethods"))) {
+			// 当前bean定义的class有@Configuration的注解，且参数proxyBeanMethods为true，则给当前beanDef添加属性，值标记为full
 			beanDef.setAttribute(CONFIGURATION_CLASS_ATTRIBUTE, CONFIGURATION_CLASS_FULL);
 		}
 		else if (config != null || isConfigurationCandidate(metadata)) {
+			// 当前bean定义的class有@Component、@ComponentScan、@Import、@ImportResource、@Bean的注解时，则给当前beanDef添加属性，值标记为lite
 			beanDef.setAttribute(CONFIGURATION_CLASS_ATTRIBUTE, CONFIGURATION_CLASS_LITE);
 		}
 		else {
@@ -142,6 +149,7 @@ abstract class ConfigurationClassUtils {
 	}
 
 	/**
+	 * 检查给定的元数据是否是一个候选的配置类
 	 * Check the given metadata for a configuration class candidate
 	 * (or nested component class declared within a configuration/component class).
 	 * @param metadata the metadata of the annotated class
@@ -149,11 +157,14 @@ abstract class ConfigurationClassUtils {
 	 * configuration class processing; {@code false} otherwise
 	 */
 	public static boolean isConfigurationCandidate(AnnotationMetadata metadata) {
+		// 不考虑接口或注解
 		// Do not consider an interface or an annotation...
 		if (metadata.isInterface()) {
 			return false;
 		}
 
+		// 如果当前的元数据是否包含以下注解，有则返回true
+		// @Component、@ComponentScan、@Import、@ImportResource
 		// Any of the typical annotations found?
 		for (String indicator : candidateIndicators) {
 			if (metadata.isAnnotated(indicator)) {
@@ -161,6 +172,7 @@ abstract class ConfigurationClassUtils {
 			}
 		}
 
+		// 如果当前的元数据对上面4种注解都没有时，则再检查一下是否有@Bean方法注解，有则返回true，否则false
 		// Finally, let's look for @Bean methods...
 		try {
 			return metadata.hasAnnotatedMethods(Bean.class.getName());

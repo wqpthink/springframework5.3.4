@@ -104,6 +104,7 @@ public interface ClassMetadata {
 	String getSuperClassName();
 
 	/**
+	 * 返回基础类实现的所有接口的名称，如果没有接口，则返回空数组
 	 * Return the names of all interfaces that the underlying class
 	 * implements, or an empty array if there are none.
 	 */

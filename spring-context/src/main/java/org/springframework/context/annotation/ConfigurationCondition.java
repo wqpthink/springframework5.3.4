@@ -46,7 +46,7 @@ public interface ConfigurationCondition extends Condition {
 		 * <p>If the condition does not match at this point, the {@code @Configuration}
 		 * class will not be added.
 		 */
-		PARSE_CONFIGURATION,
+		PARSE_CONFIGURATION, // parse_configuration
 
 		/**
 		 * The {@link Condition} should be evaluated when adding a regular
@@ -55,7 +55,7 @@ public interface ConfigurationCondition extends Condition {
 		 * <p>At the time that the condition is evaluated, all {@code @Configuration}
 		 * classes will have been parsed.
 		 */
-		REGISTER_BEAN
+		REGISTER_BEAN // register_bean
 	}
 
 }

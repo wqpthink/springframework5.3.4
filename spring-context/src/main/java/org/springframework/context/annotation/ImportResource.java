@@ -26,6 +26,7 @@ import org.springframework.beans.factory.support.BeanDefinitionReader;
 import org.springframework.core.annotation.AliasFor;
 
 /**
+ * 指示有一个或多个包含bean定义的资源需要导入
  * Indicates one or more resources containing bean definitions to import.
  *
  * <p>Like {@link Import @Import}, this annotation provides functionality similar to
@@ -63,6 +64,7 @@ public @interface ImportResource {
 	String[] value() default {};
 
 	/**
+	 * 要导入的资源位置
 	 * Resource locations from which to import.
 	 * <p>Supports resource-loading prefixes such as {@code classpath:},
 	 * {@code file:}, etc.

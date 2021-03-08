@@ -23,6 +23,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * 聚合多个@PropertySource注解的容器注解
  * Container annotation that aggregates several {@link PropertySource} annotations.
  *
  * <p>Can be used natively, declaring several nested {@link PropertySource} annotations.

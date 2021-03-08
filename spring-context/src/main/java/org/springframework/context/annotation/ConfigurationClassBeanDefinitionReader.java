@@ -147,13 +147,19 @@ class ConfigurationClassBeanDefinitionReader {
 		}
 
 		if (configClass.isImported()) {
+			// 为@Import的ConfigurationClass注册bean定义
 			registerBeanDefinitionForImportedConfigurationClass(configClass);
 		}
 		for (BeanMethod beanMethod : configClass.getBeanMethods()) {
+			// 为@Bean的bean方法
 			loadBeanDefinitionsForBeanMethod(beanMethod);
 		}
 
+		// 处理通过xml配置的bean定义
+		// 把带有@ImportResource注解加载的类，注册成bean定义
 		loadBeanDefinitionsFromImportedResources(configClass.getImportedResources());
+
+		// 把带有@Import注解的添加了ImportBeanDefinitionRegistrar的实现类，注册成bean定义
 		loadBeanDefinitionsFromRegistrars(configClass.getImportBeanDefinitionRegistrars());
 	}
 
@@ -171,6 +177,7 @@ class ConfigurationClassBeanDefinitionReader {
 
 		BeanDefinitionHolder definitionHolder = new BeanDefinitionHolder(configBeanDef, configBeanName);
 		definitionHolder = AnnotationConfigUtils.applyScopedProxyMode(scopeMetadata, definitionHolder, this.registry);
+		// 注册bean定义
 		this.registry.registerBeanDefinition(definitionHolder.getBeanName(), definitionHolder.getBeanDefinition());
 		configClass.setBeanName(configBeanName);
 
@@ -247,6 +254,7 @@ class ConfigurationClassBeanDefinitionReader {
 		beanDef.setAttribute(org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor.
 				SKIP_REQUIRED_CHECK_ATTRIBUTE, Boolean.TRUE);
 
+		// 解析元数据上一系列的注解值并设置到bean定义当中（如：@Lazy,@Primary,@DependsOn,@Role,@Description）
 		AnnotationConfigUtils.processCommonDefinitionAnnotations(beanDef, metadata);
 
 		Autowire autowire = bean.getEnum("autowire");
@@ -292,6 +300,7 @@ class ConfigurationClassBeanDefinitionReader {
 			logger.trace(String.format("Registering bean definition for @Bean method %s.%s()",
 					configClass.getMetadata().getClassName(), beanName));
 		}
+		// 注册bean定义到beanFactory中的beanDefinitionMap缓存池中
 		this.registry.registerBeanDefinition(beanName, beanDefToRegister);
 	}
 

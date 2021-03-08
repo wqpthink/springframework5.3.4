@@ -37,6 +37,7 @@ public enum ScopedProxyMode {
 	DEFAULT,
 
 	/**
+	 * 不创建作用域代理
 	 * Do not create a scoped proxy.
 	 * <p>This proxy-mode is not typically useful when used with a
 	 * non-singleton scoped instance, which should favor the use of the

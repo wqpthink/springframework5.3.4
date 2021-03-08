@@ -347,6 +347,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	String getResourceDescription();
 
 	/**
+	 * 返回原始的bean定义或null,允许检索修饰bean定义
 	 * Return the originating BeanDefinition, or {@code null} if none.
 	 * <p>Allows for retrieving the decorated bean definition, if any.
 	 * <p>Note that this method returns the immediate originator. Iterate through the

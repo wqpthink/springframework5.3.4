@@ -557,14 +557,23 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			// Tell the subclass to refresh the internal bean factory.
 			ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
 
+			// 设置beanFactory的相关属性值
+			// 向beanFactory添加相关的bean后置处理器
+			// 注册环境相关指定的实例到单例对象池中进行缓存
 			// Prepare the bean factory for use in this context.
 			prepareBeanFactory(beanFactory);
 
 			try {
+				// 允许在上下文的子类中对beanFactory进行后置处理
 				// Allows post-processing of the bean factory in context subclasses.
 				postProcessBeanFactory(beanFactory);
 
 				StartupStep beanPostProcess = this.applicationStartup.start("spring.context.beans.post-process");
+				// 在容器中调用已注册了bean的工厂处理器
+				// 1、从beanFactory中匹配出实现了BeanDefinitionRegistryPostProcessor接口的类，且同时过滤出实现了PriorityOrder接口的类，
+				// 这时候匹配到关键的ConfigurationClassPostProcessor类，会调用getBean()进行实例化，再调用BeanDefinitionRegistryPostProcessor的后置处理器postProcessBeanDefinitionRegistry()方法
+				// 2、从beanFactory中匹配出实现了BeanDefinitionRegistryPostProcessor接口的类，且同时过滤出实现了Order接口的类，这时候会排除掉第1步已经处理过的类，会调用getBean()进行实例化，再调用BeanDefinitionRegistryPostProcessor的后置处理器postProcessBeanDefinitionRegistry()方法
+				// 3、
 				// Invoke factory processors registered as beans in the context.
 				invokeBeanFactoryPostProcessors(beanFactory);
 
@@ -705,6 +714,8 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		beanFactory.ignoreDependencyInterface(ApplicationContextAware.class);
 		beanFactory.ignoreDependencyInterface(ApplicationStartup.class);
 
+		// BeanFactory接口未在普通工厂中注册为可解析类型
+		// MessageSource作为bean注册（并为自动连接找到）
 		// BeanFactory interface not registered as resolvable type in a plain factory.
 		// MessageSource registered (and found for autowiring) as a bean.
 		beanFactory.registerResolvableDependency(BeanFactory.class, beanFactory);
@@ -712,12 +723,15 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		beanFactory.registerResolvableDependency(ApplicationEventPublisher.class, this);
 		beanFactory.registerResolvableDependency(ApplicationContext.class, this);
 
+		// 注册为检测内部作业应用监听器的早期bean的后置处理
 		// Register early post-processor for detecting inner beans as ApplicationListeners.
 		beanFactory.addBeanPostProcessor(new ApplicationListenerDetector(this));
 
+		// 检测LoadTimeWeaver并准备编织
 		// Detect a LoadTimeWeaver and prepare for weaving, if found.
 		if (!NativeDetector.inNativeImage() && beanFactory.containsBean(LOAD_TIME_WEAVER_BEAN_NAME)) {
 			beanFactory.addBeanPostProcessor(new LoadTimeWeaverAwareProcessor(beanFactory));
+			// 设置临时类加载器用于类型匹配
 			// Set a temporary ClassLoader for type matching.
 			beanFactory.setTempClassLoader(new ContextTypeMatchClassLoader(beanFactory.getBeanClassLoader()));
 		}
@@ -737,6 +751,8 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		}
 	}
 
+	// 在beanFactory标准初始化之后修改容器内部的beanFactory, 所有的bean定义都将被加载，但bean还未被实例
+	// 允许实现了ApplicationContext的特殊BeanPostProcessor等注册
 	/**
 	 * Modify the application context's internal bean factory after its standard
 	 * initialization. All bean definitions will have been loaded, but no beans
@@ -747,16 +763,19 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	protected void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
 	}
 
+	// 实例化和调用所有已注册了BeanFactoryPostProcessor的bean
 	/**
 	 * Instantiate and invoke all registered BeanFactoryPostProcessor beans,
 	 * respecting explicit order if given.
 	 * <p>Must be called before singleton instantiation.
 	 */
 	protected void invokeBeanFactoryPostProcessors(ConfigurableListableBeanFactory beanFactory) {
+		// 从beanFactoryPostProcessors集合中获取数据，并调用后置处理器postProcessXXX方法
 		PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(beanFactory, getBeanFactoryPostProcessors());
 
 		// Detect a LoadTimeWeaver and prepare for weaving, if found in the meantime
 		// (e.g. through an @Bean method registered by ConfigurationClassPostProcessor)
+		// 如果在之前的prepareBeanFactory(beanFactory)方法中对beanFactory未设置临时的类加载器，且beanFactory的单例缓存池中已包含有名称为loadTimeWeaver的bean
 		if (!NativeDetector.inNativeImage() && beanFactory.getTempClassLoader() == null && beanFactory.containsBean(LOAD_TIME_WEAVER_BEAN_NAME)) {
 			beanFactory.addBeanPostProcessor(new LoadTimeWeaverAwareProcessor(beanFactory));
 			beanFactory.setTempClassLoader(new ContextTypeMatchClassLoader(beanFactory.getBeanClassLoader()));

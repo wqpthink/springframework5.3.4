@@ -35,6 +35,8 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
 /**
+ * 代表一个用户定义的Configuration配置类，包括了@Beand方法，
+ *
  * Represents a user-defined {@link Configuration @Configuration} class.
  * Includes a set of {@link Bean} methods, including all such methods
  * defined in the ancestry of the class, in a 'flattened-out' manner.
@@ -57,11 +59,15 @@ final class ConfigurationClass {
 
 	private final Set<ConfigurationClass> importedBy = new LinkedHashSet<>(1);
 
+	// 存放在配置类中通@Bean注解配置的方法，并封装成BeanMethod
 	private final Set<BeanMethod> beanMethods = new LinkedHashSet<>();
 
+	// 存放通过@ImportResource注解的配置的数据，其中locations值为String[],会存在多个值
+	// key是资源类路径，value是BeanDefinitionReader.class
 	private final Map<String, Class<? extends BeanDefinitionReader>> importedResources =
 			new LinkedHashMap<>();
 
+	// 存放通过@Import注解的ImportBeanDefinitionRegistrar实现类创建的实例对象值
 	private final Map<ImportBeanDefinitionRegistrar, AnnotationMetadata> importBeanDefinitionRegistrars =
 			new LinkedHashMap<>();
 
@@ -157,6 +163,7 @@ final class ConfigurationClass {
 		return this.beanName;
 	}
 
+	// 是否是通过@Import注册的配置类 或 嵌套在其它配置类中自动注册
 	/**
 	 * Return whether this configuration class was registered via @{@link Import} or
 	 * automatically registered due to being nested within another configuration class.
@@ -167,6 +174,7 @@ final class ConfigurationClass {
 		return !this.importedBy.isEmpty();
 	}
 
+	// 从给定的配置合并到已声明导入的配置类中
 	/**
 	 * Merge the imported-by declarations from the given configuration class into this one.
 	 * @since 4.0.5

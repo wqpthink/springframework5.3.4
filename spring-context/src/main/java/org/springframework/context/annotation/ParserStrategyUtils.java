@@ -57,12 +57,15 @@ abstract class ParserStrategyUtils {
 
 		Assert.notNull(clazz, "Class must not be null");
 		Assert.isAssignable(assignableTo, clazz);
+		// clazz不能是接口
 		if (clazz.isInterface()) {
 			throw new BeanInstantiationException(clazz, "Specified class is an interface");
 		}
 		ClassLoader classLoader = (registry instanceof ConfigurableBeanFactory ?
 				((ConfigurableBeanFactory) registry).getBeanClassLoader() : resourceLoader.getClassLoader());
+		// 通过构造函数调用newInstance()方法创建一个新的实例对象
 		T instance = (T) createInstance(clazz, environment, resourceLoader, registry, classLoader);
+		// 调用这个实例的一系列Aware回调方法，比如：Aware、BeanClassLoaderAware、BeanFactoryAware、EnvironmentAware、ResourceLoaderAware
 		ParserStrategyUtils.invokeAwareMethods(instance, environment, resourceLoader, registry, classLoader);
 		return instance;
 	}
@@ -70,8 +73,9 @@ abstract class ParserStrategyUtils {
 	private static Object createInstance(Class<?> clazz, Environment environment,
 			ResourceLoader resourceLoader, BeanDefinitionRegistry registry,
 			@Nullable ClassLoader classLoader) {
-
+		// 获取clazz类所有的构造器
 		Constructor<?>[] constructors = clazz.getDeclaredConstructors();
+		// 如果构造器的数量为1而且第一个构造器的参数大于0
 		if (constructors.length == 1 && constructors[0].getParameterCount() > 0) {
 			try {
 				Constructor<?> constructor = constructors[0];
@@ -121,6 +125,7 @@ abstract class ParserStrategyUtils {
 	private static void invokeAwareMethods(Object parserStrategyBean, Environment environment,
 			ResourceLoader resourceLoader, BeanDefinitionRegistry registry, @Nullable ClassLoader classLoader) {
 
+		// 如果parserStrategyBean实现下面一系列的Aware接口，则都会调用相关的Aware回调方法
 		if (parserStrategyBean instanceof Aware) {
 			if (parserStrategyBean instanceof BeanClassLoaderAware && classLoader != null) {
 				((BeanClassLoaderAware) parserStrategyBean).setBeanClassLoader(classLoader);

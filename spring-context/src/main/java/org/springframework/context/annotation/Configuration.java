@@ -439,6 +439,8 @@ public @interface Configuration {
 	@AliasFor(annotation = Component.class)
 	String value() default "";
 
+	// 指定是否将要代理有@Bean注解的方法，为了强制bean的生命周期行为，例如：防止使用代码直接调用添加了@Bean的方法返回实例，而是返回共享的单例bean实例
+	// 这个特征需要方法拦截，通过实现运行时生成CGLIB的子类成为受限制的配置类和它的方法不允许声明为final
 	/**
 	 * Specify whether {@code @Bean} methods should get proxied in order to enforce
 	 * bean lifecycle behavior, e.g. to return shared singleton bean instances even
