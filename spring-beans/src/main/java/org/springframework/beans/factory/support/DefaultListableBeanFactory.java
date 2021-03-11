@@ -186,6 +186,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 	private volatile String[] frozenBeanDefinitionNames;
 
 	// 是否可以为所有bean 缓存bean定义元数据
+	// 标记是否冻结已添加的beanName
 	/** Whether bean definition metadata may be cached for all beans. */
 	private volatile boolean configurationFrozen;
 
@@ -921,11 +922,16 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		// While this may not be part of the regular factory bootstrap, it does otherwise work fine.
 		List<String> beanNames = new ArrayList<>(this.beanDefinitionNames);
 
+		// 触发初始化所有非懒加载的单例bean
+		// 循环遍历根据beanNames值已标记为冻结状态，获取到bean定义
 		// Trigger initialization of all non-lazy singleton beans...
 		for (String beanName : beanNames) {
 			RootBeanDefinition bd = getMergedLocalBeanDefinition(beanName);
+			// 如果bd不是抽象类，不是懒加载的，而且是单例的
 			if (!bd.isAbstract() && bd.isSingleton() && !bd.isLazyInit()) {
+				// 如果当前的beanName是否为工厂bean的接口
 				if (isFactoryBean(beanName)) {
+					// 给当前beanName添加上&前缀后再从单例缓存池中获取bean对象
 					Object bean = getBean(FACTORY_BEAN_PREFIX + beanName);
 					if (bean instanceof FactoryBean) {
 						FactoryBean<?> factory = (FactoryBean<?>) bean;
@@ -939,17 +945,21 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 							isEagerInit = (factory instanceof SmartFactoryBean &&
 									((SmartFactoryBean<?>) factory).isEagerInit());
 						}
+						// 判断这个实现了FactoryBean接口的bean是不是渴望要实例化，如果是则调用getBean()进行实例化，否则就不进行实例化
 						if (isEagerInit) {
 							getBean(beanName);
 						}
 					}
 				}
 				else {
+					// 实例化单例bean,且注册到bean工厂的单例对象缓存池中
 					getBean(beanName);
 				}
 			}
 		}
 
+		// 再次循环遍历已冻结的beanNames，从单例对象池中获取到实例后判断是否也实现了SmartInitializingSingleton接口，如有有实现则回调SmartInitializingSingleton#adterSingletonsInstantiated()方法
+		// 触发所有可使用的bean初始化回调
 		// Trigger post-initialization callback for all applicable beans...
 		for (String beanName : beanNames) {
 			Object singletonInstance = getSingleton(beanName);
@@ -1208,7 +1218,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 
 
 	//---------------------------------------------------------------------
-	// Dependency resolution functionality
+	// Dependency resolution functionality 依赖项解析功能
 	//---------------------------------------------------------------------
 
 	@Override

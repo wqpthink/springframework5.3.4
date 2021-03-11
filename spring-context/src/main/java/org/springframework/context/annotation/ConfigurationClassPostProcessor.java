@@ -124,8 +124,10 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 
 	private boolean setMetadataReaderFactoryCalled = false;
 
+	// 注册器的后置处理器
 	private final Set<Integer> registriesPostProcessed = new HashSet<>();
 
+	// 工厂的后置处理器
 	private final Set<Integer> factoriesPostProcessed = new HashSet<>();
 
 	@Nullable
@@ -228,6 +230,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 	}
 
 	/**
+	 * 从注册器的配置类中进一步获取bean定义
 	 * Derive further bean definitions from the configuration classes in the registry.
 	 */
 	@Override
@@ -242,6 +245,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 			throw new IllegalStateException(
 					"postProcessBeanFactory already called on this post-processor against " + registry);
 		}
+		// 把注册的hashCode值添加到注册器的后置处理器的集合中
 		this.registriesPostProcessed.add(registryId);
 
 		// 处理配置方式的beanDefinition
@@ -259,10 +263,13 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 			throw new IllegalStateException(
 					"postProcessBeanFactory already called on this post-processor against " + beanFactory);
 		}
+		// 获取beanFactory的hashCode值添加到工厂后置处理器的集合中
 		this.factoriesPostProcessed.add(factoryId);
+		// 如果注册器的后置处理器集合中未包含这个beanFactory的hashCode值，则重新调用一下处理配置类的逻辑
+		// 一般会在postProcessBeanDefinitionRegistry()回调方法中向registriesPostProcessed属性添加上这个hashCode值
 		if (!this.registriesPostProcessed.contains(factoryId)) {
 			// BeanDefinitionRegistryPostProcessor hook apparently not supported...
-			// Simply call processConfigurationClasses lazily at this point then.
+			// Simply call processConfigurationClasses lazily at this point then.    
 			processConfigBeanDefinitions((BeanDefinitionRegistry) beanFactory);
 		}
 
@@ -429,8 +436,11 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 	public void enhanceConfigurationClasses(ConfigurableListableBeanFactory beanFactory) {
 		StartupStep enhanceConfigClasses = this.applicationStartup.start("spring.context.config-classes.enhance");
 		Map<String, AbstractBeanDefinition> configBeanDefs = new LinkedHashMap<>();
+		// 获取到beanFactory当中的所有bean定义名称进行循环遍历
 		for (String beanName : beanFactory.getBeanDefinitionNames()) {
+			// 根据beanName获取bean定义
 			BeanDefinition beanDef = beanFactory.getBeanDefinition(beanName);
+			// 读取当前bean定义的configurationClass属性值(full 还是 lite)
 			Object configClassAttr = beanDef.getAttribute(ConfigurationClassUtils.CONFIGURATION_CLASS_ATTRIBUTE);
 			MethodMetadata methodMetadata = null;
 			if (beanDef instanceof AnnotatedBeanDefinition) {
@@ -450,6 +460,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 					}
 				}
 			}
+			// 如果bean定义的configurationClass属性值为full,就把当前bean定义存入到configBeanDefs变量中
 			if (ConfigurationClassUtils.CONFIGURATION_CLASS_FULL.equals(configClassAttr)) {
 				if (!(beanDef instanceof AbstractBeanDefinition)) {
 					throw new BeanDefinitionStoreException("Cannot enhance @Configuration bean definition '" +
@@ -464,15 +475,18 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 				configBeanDefs.put(beanName, (AbstractBeanDefinition) beanDef);
 			}
 		}
+		// 如果没有匹配到所有的bean定义configurationClass属性中还有full的值，则立即返回
 		if (configBeanDefs.isEmpty() || NativeDetector.inNativeImage()) {
 			// nothing to enhance -> return immediately
 			enhanceConfigClasses.end();
 			return;
 		}
 
+		// 创建一个新的使用cglib增强代理配置类
 		ConfigurationClassEnhancer enhancer = new ConfigurationClassEnhancer();
 		for (Map.Entry<String, AbstractBeanDefinition> entry : configBeanDefs.entrySet()) {
 			AbstractBeanDefinition beanDef = entry.getValue();
+			// 如果配置被代理，则一直代理目标类
 			// If a @Configuration class gets proxied, always proxy the target class
 			beanDef.setAttribute(AutoProxyUtils.PRESERVE_TARGET_CLASS_ATTRIBUTE, Boolean.TRUE);
 			// Set enhanced subclass of the user-specified bean class
