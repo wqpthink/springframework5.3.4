@@ -84,9 +84,12 @@ public class SimpleInstantiationStrategy implements InstantiationStrategy {
 					}
 				}
 			}
+			// 通过构造函数的newInstance()方法创建一个新实例
 			return BeanUtils.instantiateClass(constructorToUse);
 		}
 		else {
+			// 必须生成cglib子类
+			// 通过创建一个新的cglib代理类，然后调用代理类的instantiate()方法创建bean实例，如：new CglibSubclassCreator(bd, owner).instantiate(ctor, args)
 			// Must generate CGLIB subclass.
 			return instantiateWithMethodInjection(bd, beanName, owner);
 		}

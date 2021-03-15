@@ -269,10 +269,10 @@ public abstract class AnnotationConfigUtils {
 
 		ScopedProxyMode scopedProxyMode = metadata.getScopedProxyMode();
 		if (scopedProxyMode.equals(ScopedProxyMode.NO)) {
-			// 默认不使用作用域代理模式，且为单例bean
+			// 默认不使用作用域代理模式,且为单例bean
 			return definition;
 		}
-		// 当前的BeanDefinition的代理模式是否为TargetClass,如果是则会使用cglib动态代理，否则使用jdk的动态代理
+		// 当前的BeanDefinition的代理模式是否为TargetClass,如果是则会使用cglib动态代理,否则使用jdk的动态代理
 		boolean proxyTargetClass = scopedProxyMode.equals(ScopedProxyMode.TARGET_CLASS);
 		return ScopedProxyCreator.createScopedProxy(definition, registry, proxyTargetClass);
 	}

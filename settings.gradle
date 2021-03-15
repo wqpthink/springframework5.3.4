@@ -38,6 +38,7 @@ include "framework-bom"
 include "integration-tests"
 
 include 'learn-ioc'
+include 'learn-springmvc'
 
 rootProject.name = "spring"
 rootProject.children.each {project ->

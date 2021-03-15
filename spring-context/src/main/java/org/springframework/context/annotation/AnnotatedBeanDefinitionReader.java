@@ -282,7 +282,7 @@ public class AnnotatedBeanDefinitionReader {
 
 		BeanDefinitionHolder definitionHolder = new BeanDefinitionHolder(abd, beanName);
 		// 此处会根据scopeProxyMode值判断是返回当前的原始BeanDefinition,还是返回代理的BeanDefinition
-		// 如是返回代理的BeanDefinition,则原始的BeanDefinition会在此方法内提前添加到bean定义的容器当中，且bean定义的名称添加了前缀值
+		// 如是返回代理的BeanDefinition,则原始的BeanDefinition会在此方法内提前添加到bean定义的容器当中,且bean定义的名称添加了前缀值
 		definitionHolder = AnnotationConfigUtils.applyScopedProxyMode(scopeMetadata, definitionHolder, this.registry);
 		BeanDefinitionReaderUtils.registerBeanDefinition(definitionHolder, this.registry);
 	}

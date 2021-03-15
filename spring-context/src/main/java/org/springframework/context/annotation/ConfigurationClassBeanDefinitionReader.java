@@ -156,10 +156,10 @@ class ConfigurationClassBeanDefinitionReader {
 		}
 
 		// 处理通过xml配置的bean定义
-		// 把带有@ImportResource注解加载的类，注册成bean定义
+		// 把带有@ImportResource注解加载的类,注册成bean定义
 		loadBeanDefinitionsFromImportedResources(configClass.getImportedResources());
 
-		// 把带有@Import注解的添加了ImportBeanDefinitionRegistrar的实现类，注册成bean定义
+		// 把带有@Import注解的添加了ImportBeanDefinitionRegistrar的实现类,注册成bean定义
 		loadBeanDefinitionsFromRegistrars(configClass.getImportBeanDefinitionRegistrars());
 	}
 

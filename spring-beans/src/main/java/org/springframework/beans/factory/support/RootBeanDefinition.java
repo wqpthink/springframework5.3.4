@@ -60,6 +60,7 @@ public class RootBeanDefinition extends AbstractBeanDefinition {
 	@Nullable
 	private AnnotatedElement qualifiedElement;
 
+	// 确定bean定义是否需要重新合并
 	/** Determines if the definition needs to be re-merged. */
 	volatile boolean stale;
 
@@ -111,6 +112,7 @@ public class RootBeanDefinition extends AbstractBeanDefinition {
 	/** Common lock for the two post-processing fields below. */
 	final Object postProcessingLock = new Object();
 
+	// 默认为false，如果有调用过一次MergedBeanDefinitionPostProcessor的后置处理方法就把值改为true,防止后期再次调用
 	/** Package-visible field that indicates MergedBeanDefinitionPostProcessor having been applied. */
 	boolean postProcessed = false;
 

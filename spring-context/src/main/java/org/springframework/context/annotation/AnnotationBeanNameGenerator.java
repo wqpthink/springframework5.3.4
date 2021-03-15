@@ -85,7 +85,7 @@ public class AnnotationBeanNameGenerator implements BeanNameGenerator {
 			}
 		}
 		// Fallback: generate a unique default bean name.
-		// 获取BeanDefinition中的ClassName值，然后把首字母改为小写
+		// 获取BeanDefinition中的ClassName值,然后把首字母改为小写
 		return buildDefaultBeanName(definition, registry);
 	}
 

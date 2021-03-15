@@ -279,7 +279,7 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 			// 根据指定的包名查找候选的组件（带有@Component注解的类）
 			Set<BeanDefinition> candidates = findCandidateComponents(basePackage);
 			for (BeanDefinition candidate : candidates) {
-				// candidate实例是ScannedGenericBeanDefinition，实现了AnnotatedBeanDefinition接口，也继承了AbstractBeanDefinition类
+				// candidate实例是ScannedGenericBeanDefinition,实现了AnnotatedBeanDefinition接口,也继承了AbstractBeanDefinition类
 				ScopeMetadata scopeMetadata = this.scopeMetadataResolver.resolveScopeMetadata(candidate);
 				candidate.setScope(scopeMetadata.getScopeName());
 				String beanName = this.beanNameGenerator.generateBeanName(candidate, this.registry);
@@ -312,7 +312,7 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 	 * @param beanName the generated bean name for the given bean
 	 */
 	protected void postProcessBeanDefinition(AbstractBeanDefinition beanDefinition, String beanName) {
-		// 绑定默认属性值:是否懒加载初始化、自动装配模式、依赖检查、初始化方法名，销毁方法名
+		// 绑定默认属性值:是否懒加载初始化、自动装配模式、依赖检查、初始化方法名,销毁方法名
 		beanDefinition.applyDefaults(this.beanDefinitionDefaults);
 		if (this.autowireCandidatePatterns != null) {
 			beanDefinition.setAutowireCandidate(PatternMatchUtils.simpleMatch(this.autowireCandidatePatterns, beanName));

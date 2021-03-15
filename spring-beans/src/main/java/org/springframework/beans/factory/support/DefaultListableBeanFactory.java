@@ -161,7 +161,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 	/** Map from dependency type to corresponding autowired value. */ // corresponding：相应的
 	private final Map<Class<?>, Object> resolvableDependencies = new ConcurrentHashMap<>(16);
 
-	// 加载的bean定义缓存池，key为bean的名称，value为BeanDefinition对象
+	// 加载的bean定义缓存池,key为bean的名称,value为BeanDefinition对象
 	/** Map of bean definition objects, keyed by bean name. */
 	private final Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>(256);
 
@@ -923,11 +923,11 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		List<String> beanNames = new ArrayList<>(this.beanDefinitionNames);
 
 		// 触发初始化所有非懒加载的单例bean
-		// 循环遍历根据beanNames值已标记为冻结状态，获取到bean定义
+		// 循环遍历根据beanNames值已标记为冻结状态,获取到bean定义
 		// Trigger initialization of all non-lazy singleton beans...
 		for (String beanName : beanNames) {
 			RootBeanDefinition bd = getMergedLocalBeanDefinition(beanName);
-			// 如果bd不是抽象类，不是懒加载的，而且是单例的
+			// 如果bd不是抽象类,不是懒加载的,而且是单例的
 			if (!bd.isAbstract() && bd.isSingleton() && !bd.isLazyInit()) {
 				// 如果当前的beanName是否为工厂bean的接口
 				if (isFactoryBean(beanName)) {
@@ -945,7 +945,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 							isEagerInit = (factory instanceof SmartFactoryBean &&
 									((SmartFactoryBean<?>) factory).isEagerInit());
 						}
-						// 判断这个实现了FactoryBean接口的bean是不是渴望要实例化，如果是则调用getBean()进行实例化，否则就不进行实例化
+						// 判断这个实现了FactoryBean接口的bean是不是渴望要实例化,如果是则调用getBean()进行实例化,否则就不进行实例化
 						if (isEagerInit) {
 							getBean(beanName);
 						}
@@ -958,7 +958,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 			}
 		}
 
-		// 再次循环遍历已冻结的beanNames，从单例对象池中获取到实例后判断是否也实现了SmartInitializingSingleton接口，如有有实现则回调SmartInitializingSingleton#adterSingletonsInstantiated()方法
+		// 再次循环遍历已冻结的beanNames,从单例对象池中获取到实例后判断是否也实现了SmartInitializingSingleton接口,如有有实现则回调SmartInitializingSingleton#adterSingletonsInstantiated()方法
 		// 触发所有可使用的bean初始化回调
 		// Trigger post-initialization callback for all applicable beans...
 		for (String beanName : beanNames) {
@@ -1061,7 +1061,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 			this.frozenBeanDefinitionNames = null;
 		}
 
-		// 如果bean定义已beanDefinitionMap缓存中已存在，或者在singletonObjects缓存池中已存在
+		// 如果bean定义已beanDefinitionMap缓存中已存在,或者在singletonObjects缓存池中已存在
 		if (existingDefinition != null || containsSingleton(beanName)) {
 			resetBeanDefinition(beanName);
 		}
@@ -1100,7 +1100,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 	}
 
 	/**
-	 * 重置给定bean的所有bean定义缓存，包括派生自它的bean的缓存
+	 * 重置给定bean的所有bean定义缓存,包括派生自它的bean的缓存
 	 * Reset all bean definition caches for the given bean,
 	 * including the caches of beans that are derived from it.
 	 * <p>Called after an existing bean definition has been replaced or removed,

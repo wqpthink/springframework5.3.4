@@ -142,7 +142,7 @@ public class SimpleApplicationEventMulticaster extends AbstractApplicationEventM
 				executor.execute(() -> invokeListener(listener, event));
 			}
 			else {
-				// 同步调用，调用ApplicationListener#onApplicationEvent()回调方法
+				// 同步调用,调用ApplicationListener#onApplicationEvent()回调方法
 				invokeListener(listener, event);
 			}
 		}

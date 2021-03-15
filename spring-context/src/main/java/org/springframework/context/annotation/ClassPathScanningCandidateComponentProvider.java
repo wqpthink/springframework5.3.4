@@ -61,7 +61,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
 /**
- * 从basePackage中提供候选组件的组件提供者，如果索引在扫描的类路径上可用
+ * 从basePackage中提供候选组件的组件提供者,如果索引在扫描的类路径上可用
  * A component provider that provides candidate components from a base package. Can
  * use {@link CandidateComponentsIndex the index} if it is available of scans the
  * classpath otherwise. Candidate components are identified by applying exclude and
@@ -94,7 +94,7 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 
 	private String resourcePattern = DEFAULT_RESOURCE_PATTERN;
 
-	// 在容器启动时创建ClassPathBeanDefinitionScanner后调用了registerDefaultFilters()方法，给includeFilters添加了3个值，如下：
+	// 在容器启动时创建ClassPathBeanDefinitionScanner后调用了registerDefaultFilters()方法,给includeFilters添加了3个值,如下：
 	// new AnnotationTypeFilter(Component.class)
 	// new AnnotationTypeFilter(((Class<? extends Annotation>) ClassUtils.forName("javax.annotation.ManagedBean", cl)), false)
 	// new AnnotationTypeFilter(((Class<? extends Annotation>) ClassUtils.forName("javax.inject.Named", cl)), false)
@@ -525,7 +525,7 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 	}
 
 	/**
-	 * 确保给定的bean定义作为限定的候选，检查这个类是否是接口，也不依赖内部类
+	 * 确保给定的bean定义作为限定的候选,检查这个类是否是接口,也不依赖内部类
 	 * 注：能在子类中重写
 	 * Determine whether the given bean definition qualifies as candidate.
 	 * <p>The default implementation checks whether the class is not an interface

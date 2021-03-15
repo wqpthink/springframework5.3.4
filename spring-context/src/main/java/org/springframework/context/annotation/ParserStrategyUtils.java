@@ -65,7 +65,7 @@ abstract class ParserStrategyUtils {
 				((ConfigurableBeanFactory) registry).getBeanClassLoader() : resourceLoader.getClassLoader());
 		// 通过构造函数调用newInstance()方法创建一个新的实例对象
 		T instance = (T) createInstance(clazz, environment, resourceLoader, registry, classLoader);
-		// 调用这个实例的一系列Aware回调方法，比如：Aware、BeanClassLoaderAware、BeanFactoryAware、EnvironmentAware、ResourceLoaderAware
+		// 调用这个实例的一系列Aware回调方法,比如：Aware、BeanClassLoaderAware、BeanFactoryAware、EnvironmentAware、ResourceLoaderAware
 		ParserStrategyUtils.invokeAwareMethods(instance, environment, resourceLoader, registry, classLoader);
 		return instance;
 	}
@@ -125,7 +125,7 @@ abstract class ParserStrategyUtils {
 	private static void invokeAwareMethods(Object parserStrategyBean, Environment environment,
 			ResourceLoader resourceLoader, BeanDefinitionRegistry registry, @Nullable ClassLoader classLoader) {
 
-		// 如果parserStrategyBean实现下面一系列的Aware接口，则都会调用相关的Aware回调方法
+		// 如果parserStrategyBean实现下面一系列的Aware接口,则都会调用相关的Aware回调方法
 		if (parserStrategyBean instanceof Aware) {
 			if (parserStrategyBean instanceof BeanClassLoaderAware && classLoader != null) {
 				((BeanClassLoaderAware) parserStrategyBean).setBeanClassLoader(classLoader);

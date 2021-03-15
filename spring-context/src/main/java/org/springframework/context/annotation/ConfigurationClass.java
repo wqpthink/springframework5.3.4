@@ -35,7 +35,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
 /**
- * 代表一个用户定义的Configuration配置类，包括了@Beand方法，
+ * 代表一个用户定义的Configuration配置类,包括了@Beand方法,
  *
  * Represents a user-defined {@link Configuration @Configuration} class.
  * Includes a set of {@link Bean} methods, including all such methods
@@ -59,11 +59,11 @@ final class ConfigurationClass {
 
 	private final Set<ConfigurationClass> importedBy = new LinkedHashSet<>(1);
 
-	// 存放在配置类中通@Bean注解配置的方法，并封装成BeanMethod
+	// 存放在配置类中通@Bean注解配置的方法,并封装成BeanMethod
 	private final Set<BeanMethod> beanMethods = new LinkedHashSet<>();
 
-	// 存放通过@ImportResource注解的配置的数据，其中locations值为String[],会存在多个值
-	// key是资源类路径，value是BeanDefinitionReader.class
+	// 存放通过@ImportResource注解的配置的数据,其中locations值为String[],会存在多个值
+	// key是资源类路径,value是BeanDefinitionReader.class
 	private final Map<String, Class<? extends BeanDefinitionReader>> importedResources =
 			new LinkedHashMap<>();
 

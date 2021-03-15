@@ -120,7 +120,7 @@ class ComponentScanAnnotationParser {
 		}
 
 		Set<String> basePackages = new LinkedHashSet<>();
-		// 读取到basePackages的值，比如：com.wqp.xxx,可能存在多个用逗号分割开
+		// 读取到basePackages的值,比如：com.wqp.xxx,可能存在多个用逗号分割开
 		String[] basePackagesArray = componentScan.getStringArray("basePackages");
 		for (String pkg : basePackagesArray) {
 			// 按逗号,分割开basePackages

@@ -23,7 +23,6 @@ import org.springframework.core.ResolvableType;
 import org.springframework.lang.Nullable;
 
 /**
- * 一个BeanDefinition描述了bean的实例，有属性值，构造参数值，进一步提供了实现信息
  * A BeanDefinition describes a bean instance, which has property values,
  * constructor argument values, and further information supplied by
  * concrete implementations.
@@ -347,7 +346,6 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	String getResourceDescription();
 
 	/**
-	 * 返回原始的bean定义或null,允许检索修饰bean定义
 	 * Return the originating BeanDefinition, or {@code null} if none.
 	 * <p>Allows for retrieving the decorated bean definition, if any.
 	 * <p>Note that this method returns the immediate originator. Iterate through the

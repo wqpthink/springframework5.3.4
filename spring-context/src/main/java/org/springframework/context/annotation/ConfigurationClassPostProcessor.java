@@ -265,7 +265,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 		}
 		// 获取beanFactory的hashCode值添加到工厂后置处理器的集合中
 		this.factoriesPostProcessed.add(factoryId);
-		// 如果注册器的后置处理器集合中未包含这个beanFactory的hashCode值，则重新调用一下处理配置类的逻辑
+		// 如果注册器的后置处理器集合中未包含这个beanFactory的hashCode值,则重新调用一下处理配置类的逻辑
 		// 一般会在postProcessBeanDefinitionRegistry()回调方法中向registriesPostProcessed属性添加上这个hashCode值
 		if (!this.registriesPostProcessed.contains(factoryId)) {
 			// BeanDefinitionRegistryPostProcessor hook apparently not supported...
@@ -273,8 +273,8 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 			processConfigBeanDefinitions((BeanDefinitionRegistry) beanFactory);
 		}
 
-		// 从beanFactory当中获取注册了beanName的所有名称集合，再根据名称获取到bean定义，判断bean定义当中的configurationClass值是否为full,如果是full则添加到configBeanDefs变量中记录下来
-		// 创建新的enhancer = new ConfigurationClassEnhancer(), 调用enhancer.enhance(configClass, this.beanClassLoader)方法生成新的cglib动态代理类，并重新设置bean定义的beanClass参数值
+		// 从beanFactory当中获取注册了beanName的所有名称集合,再根据名称获取到bean定义,判断bean定义当中的configurationClass值是否为full,如果是full则添加到configBeanDefs变量中记录下来
+		// 创建新的enhancer = new ConfigurationClassEnhancer(), 调用enhancer.enhance(configClass, this.beanClassLoader)方法生成新的cglib动态代理类,并重新设置bean定义的beanClass参数值
 		enhanceConfigurationClasses(beanFactory);
 
 		// 给beanFactory添加一个新的bean后置处理器
@@ -282,16 +282,16 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 	}
 
 
-	// 第1步：获取所有已注册的bean定义名称，遍历beanName获取到BeanDefinition，
-	// 同时检查beanClass中是否添加了@Configuration，如果添加了会新增标记beanDef属性为full，如果有@Configuration或者添加了@Component、@ComponentScan、@Import、@ImportResource、@Bean的注解会新增标记beanDef属性为lite
-	// 把符合上面条码的beanDef添加到候选的集合configCandidates当中，如果候选的集合为空则立即返回了
+	// 第1步：获取所有已注册的bean定义名称,遍历beanName获取到BeanDefinition,
+	// 同时检查beanClass中是否添加了@Configuration,如果添加了会新增标记beanDef属性为full,如果有@Configuration或者添加了@Component、@ComponentScan、@Import、@ImportResource、@Bean的注解会新增标记beanDef属性为lite
+	// 把符合上面条码的beanDef添加到候选的集合configCandidates当中,如果候选的集合为空则立即返回了
 	//
 	// 第2步：创建配置解析器new ConfigurationClassParser,解析每一个带有@Configuration的类,
 	// 此时会在构造函数中创建新的扫描器scanner = new ComponentScanAnnotationParser()
 	// 扫描符合配置的类加载数据到configClasses = Set<ConfigurationClass>中
 	//
 	// 第3步：创建新的读取器this.reader = new ConfigurationClassBeanDefinitionReader()
-	// 调用this.reader.loadBeanDefinitions(configClasses)，读取解析的元数据转换成BeanDefinition后注册到beanFactory的beanDefinitionMap缓存中
+	// 调用this.reader.loadBeanDefinitions(configClasses),读取解析的元数据转换成BeanDefinition后注册到beanFactory的beanDefinitionMap缓存中
 	//
 	//
 	//
@@ -306,16 +306,16 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 		// 此for循环会匹配出appConfig类添加到configCandidates集合中
 		for (String beanName : candidateNames) {
 			BeanDefinition beanDef = registry.getBeanDefinition(beanName);
-			// 如果当前的beanDef已经处理过并添加了属性值，则会打印提示的日志信息，并忽略当前beanDef的处理
+			// 如果当前的beanDef已经处理过并添加了属性值,则会打印提示的日志信息,并忽略当前beanDef的处理
 			if (beanDef.getAttribute(ConfigurationClassUtils.CONFIGURATION_CLASS_ATTRIBUTE) != null) {
 				if (logger.isDebugEnabled()) {
 					logger.debug("Bean definition has already been processed as a configuration class: " + beanDef);
 				}
 			}
 			// 1、检查当前给定的BeanDefinition是否是候选的配置类
-			// 2、此处会过滤掉当前beanDef的beanClass是否实现了BeanFactoryPostProcessor、BeanPostProcessor、AopInfrastructureBean、EventListenerFactory这4种接口的bean定义，如果是则直接返回false
-			// 3、会检查当前beanDef的beanClass类是否添加了@Configuration而且proxyBeanMethods为true时，如果有则在当前beanDef当中添加属性值标记为full，再检查是否有@Order注解并把值添加到beanDef属性中，再返回true
-			// 4、会检查当前beanDef的beanClass类是否添加了@Configuration或者添加了@Component、@ComponentScan、@Import、@ImportResource或方法上添加了@Bean注解，如果有则在当前beanDef当中添加属性值标记为lite,再检查是否有@Order注解并把值添加到beanDef属性中，再返回true,否则返回false
+			// 2、此处会过滤掉当前beanDef的beanClass是否实现了BeanFactoryPostProcessor、BeanPostProcessor、AopInfrastructureBean、EventListenerFactory这4种接口的bean定义,如果是则直接返回false
+			// 3、会检查当前beanDef的beanClass类是否添加了@Configuration而且proxyBeanMethods为true时,如果有则在当前beanDef当中添加属性值标记为full,再检查是否有@Order注解并把值添加到beanDef属性中,再返回true
+			// 4、会检查当前beanDef的beanClass类是否添加了@Configuration或者添加了@Component、@ComponentScan、@Import、@ImportResource或方法上添加了@Bean注解,如果有则在当前beanDef当中添加属性值标记为lite,再检查是否有@Order注解并把值添加到beanDef属性中,再返回true,否则返回false
 			else if (ConfigurationClassUtils.checkConfigurationClassCandidate(beanDef, this.metadataReaderFactory)) {
 				// 把添加了@Configuration、@Component、@ComponentScan、@Import、@ImportResource、@Bean的beanDef添加到符合条件的候选集合当中
 				configCandidates.add(new BeanDefinitionHolder(beanDef, beanName));
@@ -401,9 +401,9 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 				}
 				for (String candidateName : newCandidateNames) {
 					if (!oldCandidateNames.contains(candidateName)) {
-						// 把新添加的候选beanName找出来，然后根据名称获取到bean定义
+						// 把新添加的候选beanName找出来,然后根据名称获取到bean定义
 						BeanDefinition bd = registry.getBeanDefinition(candidateName);
-						// 如果当前的bean定义指定的class又是一个配置类，而且不在当前已经解析过的配置类集合中，则添加到candidates集合中
+						// 如果当前的bean定义指定的class又是一个配置类,而且不在当前已经解析过的配置类集合中,则添加到candidates集合中
 						if (ConfigurationClassUtils.checkConfigurationClassCandidate(bd, this.metadataReaderFactory) &&
 								!alreadyParsedClasses.contains(bd.getBeanClassName())) {
 							candidates.add(new BeanDefinitionHolder(bd, candidateName));
@@ -475,7 +475,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 				configBeanDefs.put(beanName, (AbstractBeanDefinition) beanDef);
 			}
 		}
-		// 如果没有匹配到所有的bean定义configurationClass属性中还有full的值，则立即返回
+		// 如果没有匹配到所有的bean定义configurationClass属性中还有full的值,则立即返回
 		if (configBeanDefs.isEmpty() || NativeDetector.inNativeImage()) {
 			// nothing to enhance -> return immediately
 			enhanceConfigClasses.end();
@@ -486,7 +486,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 		ConfigurationClassEnhancer enhancer = new ConfigurationClassEnhancer();
 		for (Map.Entry<String, AbstractBeanDefinition> entry : configBeanDefs.entrySet()) {
 			AbstractBeanDefinition beanDef = entry.getValue();
-			// 如果配置被代理，则一直代理目标类
+			// 如果配置被代理,则一直代理目标类
 			// If a @Configuration class gets proxied, always proxy the target class
 			beanDef.setAttribute(AutoProxyUtils.PRESERVE_TARGET_CLASS_ATTRIBUTE, Boolean.TRUE);
 			// Set enhanced subclass of the user-specified bean class

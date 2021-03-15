@@ -43,6 +43,7 @@ import org.springframework.lang.Nullable;
  */
 public abstract class FactoryBeanRegistrySupport extends DefaultSingletonBeanRegistry {
 
+	// 工厂bean的缓存池,key为beanName,value为FactoryBean的实例
 	/** Cache of singleton objects created by FactoryBeans: FactoryBean name to object. */
 	private final Map<String, Object> factoryBeanObjectCache = new ConcurrentHashMap<>(16);
 
@@ -94,8 +95,9 @@ public abstract class FactoryBeanRegistrySupport extends DefaultSingletonBeanReg
 	 * @see org.springframework.beans.factory.FactoryBean#getObject()
 	 */
 	protected Object getObjectFromFactoryBean(FactoryBean<?> factory, String beanName, boolean shouldPostProcess) {
+		// 如果FactoryBean是单例bean,而且在单例缓存池中也存在这个beanName
 		if (factory.isSingleton() && containsSingleton(beanName)) {
-			synchronized (getSingletonMutex()) {
+			synchronized (getSingletonMutex()) { // 锁定的是单例对象池
 				Object object = this.factoryBeanObjectCache.get(beanName);
 				if (object == null) {
 					object = doGetObjectFromFactoryBean(factory, beanName);
@@ -113,6 +115,7 @@ public abstract class FactoryBeanRegistrySupport extends DefaultSingletonBeanReg
 							}
 							beforeSingletonCreation(beanName);
 							try {
+								// 调用bean的后置处理器初始化之后的回调方法
 								object = postProcessObjectFromFactoryBean(object, beanName);
 							}
 							catch (Throwable ex) {
@@ -132,9 +135,12 @@ public abstract class FactoryBeanRegistrySupport extends DefaultSingletonBeanReg
 			}
 		}
 		else {
+			// 如果factory不是单例bean,或者在单例缓存池中没有beanName时,就会调用FactoryBean#getObject()方法返回一个实例
+			// 如果getObject()返回的实例为空时，就返回new NullBean实例
 			Object object = doGetObjectFromFactoryBean(factory, beanName);
 			if (shouldPostProcess) {
 				try {
+					// 调用bean的后置处理器初始化之后的回调方法
 					object = postProcessObjectFromFactoryBean(object, beanName);
 				}
 				catch (Throwable ex) {
@@ -166,6 +172,7 @@ public abstract class FactoryBeanRegistrySupport extends DefaultSingletonBeanReg
 				}
 			}
 			else {
+				// 调用FactoryBean#getObject()方法，获取到工厂bean返回的实例
 				object = factory.getObject();
 			}
 		}
