@@ -373,10 +373,13 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 					// It's a prototype -> create a new instance.
 					Object prototypeInstance = null;
 					try {
+						// 在创建beanName对象之前在本地线程当中进行标记操作
 						beforePrototypeCreation(beanName);
+						// 创建新实例
 						prototypeInstance = createBean(beanName, mbd, args);
 					}
 					finally {
+						// 在创建beanName对象之后在本地线程当中把标记移除
 						afterPrototypeCreation(beanName);
 					}
 					beanInstance = getObjectForBeanInstance(prototypeInstance, name, beanName, mbd);
@@ -387,17 +390,22 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 					if (!StringUtils.hasLength(scopeName)) {
 						throw new IllegalStateException("No scope name defined for bean ´" + beanName + "'");
 					}
+					// 根据bean定义当中配置的作用域名称从bean工厂获取已注册的作用域
 					Scope scope = this.scopes.get(scopeName);
 					if (scope == null) {
 						throw new IllegalStateException("No Scope registered for scope name '" + scopeName + "'");
 					}
 					try {
+						// 调用作用域的get方法创建一个新实例对象
 						Object scopedInstance = scope.get(beanName, () -> {
+							// 在创建beanName对象之前在本地线程当中进行标记操作，beforePrototypeCreation(beanName)
 							beforePrototypeCreation(beanName);
 							try {
+								// 创建新实例
 								return createBean(beanName, mbd, args);
 							}
 							finally {
+								// 在创建beanName对象之后在本地线程当中把标记移除
 								afterPrototypeCreation(beanName);
 							}
 						});
@@ -1971,6 +1979,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	 */
 	protected void registerDisposableBeanIfNecessary(String beanName, Object bean, RootBeanDefinition mbd) {
 		AccessControlContext acc = (System.getSecurityManager() != null ? getAccessControlContext() : null);
+		// 如果不是原型bean定义，而且需要销毁bean时
 		if (!mbd.isPrototype() && requiresDestruction(bean, mbd)) {
 			if (mbd.isSingleton()) {
 				// Register a DisposableBean implementation that performs all destruction
@@ -2150,14 +2159,15 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	 *
 	 * @since 5.3
 	 */
+	// bean的后置处理器缓存
 	static class BeanPostProcessorCache {
-
+		// 实例化的bean后置处理器
 		final List<InstantiationAwareBeanPostProcessor> instantiationAware = new ArrayList<>();
-
+		// 智能的实例化的bean后置处理器
 		final List<SmartInstantiationAwareBeanPostProcessor> smartInstantiationAware = new ArrayList<>();
-
+		// 销毁的bean的后置处理器
 		final List<DestructionAwareBeanPostProcessor> destructionAware = new ArrayList<>();
-
+		// 合并的bean定义的bean的后置处理器
 		final List<MergedBeanDefinitionPostProcessor> mergedDefinition = new ArrayList<>();
 	}
 

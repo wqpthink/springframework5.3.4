@@ -285,7 +285,7 @@ final class PostProcessorRegistrationDelegate {
 		// 把从beanFactory当中匹配出来的实现了BeanPostProcessor的所有beanNames进行循环遍历,按实现了PriorityOrdered/Ordered/未实现前2个接口,进行区分开统计出来
 		for (String ppName : postProcessorNames) {
 			if (beanFactory.isTypeMatch(ppName, PriorityOrdered.class)) {
-				// 此处会实例化AutowiredAnnotationBeanPostProcessor类
+				// 此处会实例化AutowiredAnnotationBeanPostProcessor类,在构造方法中会把@Autowired、@Value注解添加到autowiredAnnotationTypes缓存当中
 				BeanPostProcessor pp = beanFactory.getBean(ppName, BeanPostProcessor.class);
 				priorityOrderedPostProcessors.add(pp);
 				// 如果当前bean的后置处理器实现类既实现了PriorityOrdered接口,也实现了MergedBeanDefinitionPostProcessor这个bean的后置处理器接口,就把pp添加到internalPostProcessors变量集合中

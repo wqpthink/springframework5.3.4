@@ -258,6 +258,7 @@ public class AutowiredAnnotationBeanPostProcessor implements SmartInstantiationA
 	public Constructor<?>[] determineCandidateConstructors(Class<?> beanClass, final String beanName)
 			throws BeanCreationException {
 
+		// 判断是否带有@Lookup注解
 		// Let's check for lookup methods here...
 		if (!this.lookupMethodsChecked.contains(beanName)) {
 			if (AnnotationUtils.isCandidateClass(beanClass, Lookup.class)) {
@@ -301,7 +302,8 @@ public class AutowiredAnnotationBeanPostProcessor implements SmartInstantiationA
 				if (candidateConstructors == null) {
 					Constructor<?>[] rawCandidates;
 					try {
-						rawCandidates = beanClass.getDeclaredConstructors(); // 通过反射获取到当前class的所有构造函数方法
+						// 通过反射获取到当前class的所有构造函数方法
+						rawCandidates = beanClass.getDeclaredConstructors();
 					}
 					catch (Throwable ex) {
 						throw new BeanCreationException(beanName,
@@ -313,8 +315,11 @@ public class AutowiredAnnotationBeanPostProcessor implements SmartInstantiationA
 					Constructor<?> defaultConstructor = null;
 					Constructor<?> primaryConstructor = BeanUtils.findPrimaryConstructor(beanClass);
 					int nonSyntheticConstructors = 0;
+
+					// 遍历当前class的所有构造函数
 					for (Constructor<?> candidate : rawCandidates) {
 						if (!candidate.isSynthetic()) {
+							// 如果构造函数不是合成的就标记加1
 							nonSyntheticConstructors++;
 						}
 						else if (primaryConstructor != null) {
@@ -325,6 +330,7 @@ public class AutowiredAnnotationBeanPostProcessor implements SmartInstantiationA
 							Class<?> userClass = ClassUtils.getUserClass(beanClass);
 							if (userClass != beanClass) {
 								try {
+									// 根据带有构造参数再次获取所有的构造函数
 									Constructor<?> superCtor =
 											userClass.getDeclaredConstructor(candidate.getParameterTypes());
 									ann = findAutowiredAnnotation(superCtor);
@@ -357,6 +363,8 @@ public class AutowiredAnnotationBeanPostProcessor implements SmartInstantiationA
 							defaultConstructor = candidate;
 						}
 					}
+
+					// 如果候选的构造函数不为空
 					if (!candidates.isEmpty()) {
 						// Add default constructor to list of optional constructors, as fallback.
 						if (requiredConstructor == null) {
@@ -370,25 +378,34 @@ public class AutowiredAnnotationBeanPostProcessor implements SmartInstantiationA
 										"default constructor to fall back to: " + candidates.get(0));
 							}
 						}
+						// 把当前候选的构造函数设置给待返回的数组中
 						candidateConstructors = candidates.toArray(new Constructor<?>[0]);
 					}
+					// 如果原生的构造函数只有一个，且参数大于0时
 					else if (rawCandidates.length == 1 && rawCandidates[0].getParameterCount() > 0) {
+						// 就把当前这一个带有参数的构造函数设置给待返回的数组中
 						candidateConstructors = new Constructor<?>[] {rawCandidates[0]};
 					}
+					// 如果非合成的构造函数数量等于2、主构造函数存在、默认构造函数存在、主构造函数不等于默认构造函数时
 					else if (nonSyntheticConstructors == 2 && primaryConstructor != null &&
 							defaultConstructor != null && !primaryConstructor.equals(defaultConstructor)) {
+						// 就把当前主构造函数和默认构造函数封装在数组当中设置给待返回的数组中
 						candidateConstructors = new Constructor<?>[] {primaryConstructor, defaultConstructor};
 					}
+					// 如果非合成的构造函数数量等于1且主构造函数存在时
 					else if (nonSyntheticConstructors == 1 && primaryConstructor != null) {
+						// 就把当前主构造函数设置给待返回的数组中
 						candidateConstructors = new Constructor<?>[] {primaryConstructor};
 					}
 					else {
+						// 否则设置空的数组给待返回的数组中
 						candidateConstructors = new Constructor<?>[0];
 					}
 					this.candidateConstructorsCache.put(beanClass, candidateConstructors);
 				}
 			}
 		}
+		// 如果存在满足条件的构造函数就返回，否则返回null
 		return (candidateConstructors.length > 0 ? candidateConstructors : null);
 	}
 
