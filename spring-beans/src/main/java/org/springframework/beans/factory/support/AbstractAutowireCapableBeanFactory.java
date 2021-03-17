@@ -351,7 +351,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 
 	//-------------------------------------------------------------------------
-	// Specialized methods for fine-grained control over the bean lifecycle
+	// Specialized methods for fine-grained control over the bean lifecycle 对bean的生命周期进行细粒度控制的方法
 	//-------------------------------------------------------------------------
 
 	@Override
@@ -607,6 +607,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			// 1、把对象工厂添加到单例工厂缓存池中（addSingletonFactory(String beanName, ObjectFactory<?> singletonFactory)）
 			// 2、从早期单例对象缓存池中移除早期单例对象
 			// 3、向已注册的单例集合中添加记录当前beanName
+			// addSingletonFactory(String beanName, ObjectFactory<?> singletonFactory)
 			addSingletonFactory(beanName, () -> getEarlyBeanReference(beanName, mbd, bean));
 		}
 
@@ -983,8 +984,11 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 */
 	protected Object getEarlyBeanReference(String beanName, RootBeanDefinition mbd, Object bean) {
 		Object exposedObject = bean;
+		// 如果bean定义不是合成的，而且 在BeanPostProcessorCache#instantiationAware缓存中存在值时
 		if (!mbd.isSynthetic() && hasInstantiationAwareBeanPostProcessors()) {
+			// 循环遍历
 			for (SmartInstantiationAwareBeanPostProcessor bp : getBeanPostProcessorCache().smartInstantiationAware) {
+				// 这里关键会调用到AbstractAutoProxyCreator类，会判断是否创建动态代理类
 				exposedObject = bp.getEarlyBeanReference(exposedObject, beanName);
 			}
 		}
